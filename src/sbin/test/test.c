@@ -492,14 +492,14 @@ int semaphore_test3(void)
 	if (buffer_fd < 0)
 		return (-1);
 
-	printf ("test sem create \n") ;
+	printf ("test semget \n") ;
 	fflush (stdout) ;
 	/* Create semaphores. */
 	SEM_CREATE(mutex, 1);
 	SEM_CREATE(empty, 2);
 	SEM_CREATE(full, 3);
 
-	printf ("test apres sem create \n") ;
+	printf ("test semctl \n") ;
 	fflush (stdout) ;
 
 	/* Initialize semaphores. */
@@ -513,6 +513,8 @@ int semaphore_test3(void)
 	/* Producer. */
 	else if (pid == 0)
 	{
+		printf ("test sem down/up producer\n") ;
+		fflush (stdout) ;
 		for (int item = 0; item < NR_ITEMS; item++)
 		{
 			SEM_DOWN(empty);
@@ -530,6 +532,7 @@ int semaphore_test3(void)
 	/* Consumer. */
 	else
 	{
+		printf ("test sem down/up consumer\n") ;
 		int item;
 
 		do
@@ -543,7 +546,7 @@ int semaphore_test3(void)
 			SEM_UP(empty);
 		} while (item != (NR_ITEMS - 1));
 	}
-
+	printf("test sem destroy");
 	/* Destroy semaphores. */
 	SEM_DESTROY(mutex);
 	SEM_DESTROY(empty);

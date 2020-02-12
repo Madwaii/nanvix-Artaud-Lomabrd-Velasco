@@ -43,6 +43,8 @@ int create(int n){
 }
 
 PUBLIC void down(SEM s){
+    int i =s.counter;
+    i++;
     disable_interrupts();
     if (s.counter>0) {
         s.counter--;
@@ -82,34 +84,38 @@ PUBLIC void destroy(SEM s){
 }
 
 PUBLIC int sys_semget(unsigned key ) {
-    int id = 0 ; // create(0);
-    key++;
-    // slist[id]->key = key;;
+    for (int i=0; i<SMAX; i++) {
+        if (slist[i] !=NULL) {
+            if (slist[i]->key==key) return i;
+        }
+    }
+    int id = create(0);
+    slist[id]->key = key;;
     return id;
 }
 
 PUBLIC int sys_semctl(int semid, int cmd, int val){
-    SEM s = *slist[semid];
     if (cmd == GETVAL) {
-        return s.counter;
+        return slist[semid]->counter;
     }
     else if (cmd == SETVAL) {
-        s.counter = val;
+        slist[semid]->counter = val;
         return 0;
     }
     else if (cmd == IPC_RMID) {
-        destroy(s);
+        destroy(*slist[semid]);
         return 0;
     }
     return -1;
 }
 
 PUBLIC int sys_semop(int semid, int op){
-    SEM s = *slist[semid];
+    int i =semid;
+    i++;
     if (op <0) {
-        down(s);
+        down(*slist[semid]);
     } else {
-        up(s);
+        up(*slist[semid]);
     }
     return 0;
 }
