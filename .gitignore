@@ -1,3 +1,7 @@
 *.o
 *.lock
 *.debug
+bin/ubin/*
+hdd.img
+lib/libc.a
+nanvix.iso
