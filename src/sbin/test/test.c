@@ -488,13 +488,19 @@ int semaphore_test3(void)
 
 	/* Create buffer.*/
 	buffer_fd = open("buffer", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+
 	if (buffer_fd < 0)
 		return (-1);
 
+	printf ("test sem create \n") ;
+	fflush (stdout) ;
 	/* Create semaphores. */
 	SEM_CREATE(mutex, 1);
 	SEM_CREATE(empty, 2);
 	SEM_CREATE(full, 3);
+
+	printf ("test apres sem create \n") ;
+	fflush (stdout) ;
 
 	/* Initialize semaphores. */
 	SEM_INIT(full, 0);

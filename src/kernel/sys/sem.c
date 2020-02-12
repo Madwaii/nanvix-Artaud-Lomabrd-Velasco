@@ -30,7 +30,7 @@ int idlibre () {
     }
     return -1;
 }
-SEM create(int n){
+int create(int n){
     int id = idlibre();
     SEM sem;
     sem.counter=n;
@@ -39,7 +39,7 @@ SEM create(int n){
     sem.id=id;
     sem.key=-42;
     slist[id]=&sem;
-    return sem;
+    return sem.id;
 }
 
 PUBLIC void down(SEM s){
@@ -81,13 +81,14 @@ PUBLIC void destroy(SEM s){
     slist[s.id]=NULL;
 }
 
-PUBLIC extern int sys_semget(unsigned key ) {
-    SEM s = create(0);
-    s.key = key;
-    return s.id;
+PUBLIC int sys_semget(unsigned key ) {
+    int id = 0 ; // create(0);
+    key++;
+    // slist[id]->key = key;;
+    return id;
 }
 
-PUBLIC extern int sys_semctl(int semid, int cmd, int val){
+PUBLIC int sys_semctl(int semid, int cmd, int val){
     SEM s = *slist[semid];
     if (cmd == GETVAL) {
         return s.counter;
@@ -103,7 +104,7 @@ PUBLIC extern int sys_semctl(int semid, int cmd, int val){
     return -1;
 }
 
-PUBLIC extern int sys_semop(int semid, int op){
+PUBLIC int sys_semop(int semid, int op){
     SEM s = *slist[semid];
     if (op <0) {
         down(s);
