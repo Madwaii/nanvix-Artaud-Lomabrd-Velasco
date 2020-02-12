@@ -12,110 +12,112 @@
 EXTERN int sys_kill(pid_t pid, int sig);
 
 
-typedef struct
-{
-    unsigned key;
+typedef struct Sem{
     int counter;
-    int id;
-    struct process** processes;
+    struct process *tabWait[64];
+    unsigned  key;
 } SEM;
 
-PUBLIC SEM *slist[SMAX] = {NULL};
 
-int idlibre () {
-    for (int i =0; i<SMAX; i++) {
-        if (slist[i]==NULL) {
-            return i;
-        }
-    }
-    return -1;
-}
-int create(int n){
-    int id = idlibre();
-    SEM sem;
-    sem.counter=n;
-    struct process* lp[64];
-    sem.processes=lp;
-    sem.id=id;
-    sem.key=-42;
-    slist[id]=&sem;
-    return sem.id;
-}
+SEM tabSem[64];
 
-PUBLIC void down(SEM s){
-    int i =s.counter;
-    i++;
-    disable_interrupts();
-    if (s.counter>0) {
-        s.counter--;
-    }
-    else {
-        sleep(s.processes, 1);
-    }
-    enable_interrupts();
+unsigned int curkey=1;
+
+SEM* create (int n){
+
+	int i=0;
+	while(tabSem[i].key!=0){
+		i++;
+	}
+	if(i<64){
+		tabSem[i].key=curkey;
+		tabSem[i].counter=n;
+		curkey++;
+		return &tabSem[i];
+	}
+	else{
+		return NULL;
+	}
+
+
 }
 
-PUBLIC void up(SEM s){
-    disable_interrupts();
-    if (s.processes != NULL && s.counter==0 ) {
-        struct process *p = s.processes[0];
-        int i =0;
-        while(p->next!= NULL){
-            p = p->next;
-            i++;
-        }
-        struct process **l = &s.processes[i];
-        wakeup(l);
-        s.processes[i-1]->next = NULL;
-    }
-    else {
-        s.counter++;
-    }
-    enable_interrupts();
+void down(SEM *sem){
+  if(sem->counter > 0){
+    sem->counter--;
+  }
+  else{
+    sleep(sem->tabWait,5);
+  }
 }
 
-PUBLIC void destroy(SEM s){
-    struct process *p = s.processes[0];
-    while(p->next!= NULL){
-        p = p->next;
-        sys_kill(p->pid, 9);
+void up(SEM *sem){
+  if(sem->counter==0){
+    if(sem->tabWait[0]!=NULL){
+      wakeup(sem->tabWait);
     }
-    slist[s.id]=NULL;
+    else{
+      sem->counter++;
+    }
+  }
+
 }
 
-PUBLIC int sys_semget(unsigned key ) {
-    for (int i=0; i<SMAX; i++) {
-        if (slist[i] !=NULL) {
-            if (slist[i]->key==key) return i;
-        }
-    }
-    int id = create(0);
-    slist[id]->key = key;;
-    return id;
+void destroy(SEM *sem){
+  for(int i=0;i<64;i++){
+    sem->tabWait[i]=NULL;
+  }
+	sem->key=0;
 }
 
-PUBLIC int sys_semctl(int semid, int cmd, int val){
-    if (cmd == GETVAL) {
-        return slist[semid]->counter;
+int sys_semget(unsigned key){
+  int i=0;
+  while(i<64){
+    if(tabSem[i].key==key){
+    	return i;
     }
-    else if (cmd == SETVAL) {
-        slist[semid]->counter = val;
-        return 0;
-    }
-    else if (cmd == IPC_RMID) {
-        destroy(*slist[semid]);
-        return 0;
-    }
-    return -1;
+		i++;
+  }
+	if(i>=64){
+		SEM* sem= create(1);
+		sem->key=key;
+		int ID=0;
+		while(tabSem[ID].key!=key){
+			ID++;
+		}
+		return ID;
+	}
+	else{
+		return -1;
+	}
 }
 
-PUBLIC int sys_semop(int semid, int op){
-    int i =semid;
-    i++;
-    if (op <0) {
-        down(*slist[semid]);
-    } else {
-        up(*slist[semid]);
-    }
-    return 0;
+int sys_semctl(int semid, int cmd, int val){
+	switch(cmd){
+		case GETVAL:
+			return tabSem[semid].counter;
+		case SETVAL:
+			tabSem[semid].counter=val;
+			return 0;
+		case IPC_RMID:
+			destroy(&tabSem[semid]);
+			return 0;
+		default:
+			break;
+	}
+  return -1;
+}
+
+int sys_semop(int semid, int op){
+	if(op>0){
+		up(&tabSem[semid]);
+		return 0;
+	}
+	if(op<0){
+		down(&tabSem[semid]);
+		return 0;
+	}
+	else{
+		return -1;
+	}
 }
