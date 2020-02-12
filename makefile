@@ -72,6 +72,9 @@ image: $(BINDIR)/kernel tools
 	mkdir -p $(BINDIR)
 	bash $(TOOLSDIR)/build/build-img.sh $(EDUCATIONAL_KERNEL) --build-iso
 
+build:
+	make image
+	make nanvix
 # Builds documentation.
 documentation:
 	doxygen $(DOXYDIR)/kernel.config
