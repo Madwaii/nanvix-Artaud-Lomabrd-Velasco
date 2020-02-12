@@ -54,7 +54,12 @@ void down(SEM *sem){
 void up(SEM *sem){
     if(sem->counter==0){
         if(sem->tabWait[0]!=NULL){
-            wakeup(sem->tabWait);
+            struct process *tabunique = sem->tabWait[0];
+            for (int i = 0; i<63; i++) {
+                sem->tabWait[i]=sem->tabWait[i+1];
+            }
+            sem->tabWait[63]=NULL;
+            wakeup(&tabunique);
         }
         else{
             sem->counter++;
