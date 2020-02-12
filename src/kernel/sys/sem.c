@@ -30,7 +30,7 @@ int idlibre () {
     }
     return -1;
 }
-SEM create(int n){
+int create(int n){
     int id = idlibre();
     SEM sem;
     sem.counter=n;
@@ -39,7 +39,7 @@ SEM create(int n){
     sem.id=id;
     sem.key=-42;
     slist[id]=&sem;
-    return sem;
+    return sem.id;
 }
 
 PUBLIC void down(SEM s){
@@ -82,9 +82,9 @@ PUBLIC void destroy(SEM s){
 }
 
 PUBLIC extern int sys_semget(unsigned key ) {
-    SEM s = create(0);
-    s.key = key;
-    return s.id;
+    int id = create(0);
+    slist[id]->key = key;;
+    return id;
 }
 
 PUBLIC extern int sys_semctl(int semid, int cmd, int val){

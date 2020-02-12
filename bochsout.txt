@@ -31,7 +31,7 @@
 00000000000i[      ]   Sound support: no
 00000000000i[      ]   USB support: no
 00000000000i[      ]   VGA extension support: vbe
-00000000000i[MEM0  ] allocated memory at 0x7fdc14354010. after alignment, vector=0x7fdc14355000
+00000000000i[MEM0  ] allocated memory at 0x7f8f03cd1010. after alignment, vector=0x7f8f03cd2000
 00000000000i[MEM0  ] 16,00MB
 00000000000i[MEM0  ] mem block size = 0x00020000, blocks=128
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('/usr/local/share/bochs/BIOS-bochs-latest')
@@ -41,7 +41,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using utc time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Wed Feb 12 07:14:16 2020 (time0=1581488056)
+00000000000i[CMOS  ] Setting initial clock to: Wed Feb 12 07:40:11 2020 (time0=1581489611)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -187,29 +187,37 @@
 00014530712i[BIOS  ] int13_harddisk: function 41, unmapped device for ELDL=81
 00014534389i[BIOS  ] int13_harddisk: function 08, unmapped device for ELDL=81
 00014538050i[BIOS  ] *** int 15h function AX=00c0, BX=0000 not yet supported!
-00020634204i[HD    ] disk ata1-0 not present, aborting
-00145187913i[TERM  ] ips = 145,188M
-00279901147i[TERM  ] ips = 134,713M
-00406470007i[TERM  ] ips = 126,569M
-00507741336p[TERM  ] >>PANIC<< Received SIGHUP: quit simulation
-00507741336i[CPU0  ] CPU is in protected mode (active)
-00507741336i[CPU0  ] CS.mode = 32 bit
-00507741336i[CPU0  ] SS.mode = 32 bit
-00507741336i[CPU0  ] EFER   = 0x00000000
-00507741336i[CPU0  ] | EAX=00000002  EBX=001d1007  ECX=00000005  EDX=00000640
-00507741336i[CPU0  ] | ESP=c014874c  EBP=c0148764  ESI=0002bab0  EDI=00100ffc
-00507741336i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf ZF af PF cf
-00507741336i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-00507741336i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-00507741336i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00507741336i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00507741336i[CPU0  ] |  ES:0000( 0002| 0|  0) 00000000 ffffffff 1 1
-00507741336i[CPU0  ] |  FS:0000( 0002| 0|  0) 00000000 ffffffff 1 1
-00507741336i[CPU0  ] |  GS:0000( 0002| 0|  0) 00000000 ffffffff 1 1
-00507741336i[CPU0  ] | EIP=c0110ec5 (c0110ec0)
-00507741336i[CPU0  ] | CR0=0xe0000011 CR2=0xa0003004
-00507741336i[CPU0  ] | CR3=0x00104000 CR4=0x00000000
-00507741336i[CPU0  ] 0xc0110ec0>> mov eax, dword ptr ds:0xc0119190 : A1909111C0
-00507741336i[CMOS  ] Last time is 1581488182 (Wed Feb 12 07:16:22 2020)
-00507741336i[      ] restoring default signal behavior
-00507741336i[SIM   ] quit_sim called with exit code 1
+00020634161i[HD    ] disk ata1-0 not present, aborting
+00139113666i[TERM  ] ips = 139,114M
+00276018204i[TERM  ] ips = 136,905M
+00410060278i[TERM  ] ips = 134,042M
+00552184806i[TERM  ] ips = 142,125M
+00693790522i[TERM  ] ips = 141,606M
+00840532340i[TERM  ] ips = 146,742M
+00974385989i[TERM  ] ips = 133,854M
+01114961041i[TERM  ] ips = 140,575M
+01255250798i[TERM  ] ips = 140,290M
+01398520000i[TERM  ] ips = 143,269M
+01527570255i[TERM  ] ips = 129,050M
+01627965782p[TERM  ] >>PANIC<< Received SIGHUP: quit simulation
+01627965782i[CPU0  ] CPU is in protected mode (active)
+01627965782i[CPU0  ] CS.mode = 32 bit
+01627965782i[CPU0  ] SS.mode = 32 bit
+01627965782i[CPU0  ] EFER   = 0x00000000
+01627965782i[CPU0  ] | EAX=00000000  EBX=001d1007  ECX=00000005  EDX=00000640
+01627965782i[CPU0  ] | ESP=c014874c  EBP=c0148764  ESI=0002bab0  EDI=00100ffc
+01627965782i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf SF zf af PF CF
+01627965782i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+01627965782i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
+01627965782i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+01627965782i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+01627965782i[CPU0  ] |  ES:0000( 0002| 0|  0) 00000000 ffffffff 1 1
+01627965782i[CPU0  ] |  FS:0000( 0002| 0|  0) 00000000 ffffffff 1 1
+01627965782i[CPU0  ] |  GS:0000( 0002| 0|  0) 00000000 ffffffff 1 1
+01627965782i[CPU0  ] | EIP=c0110f69 (c0110f63)
+01627965782i[CPU0  ] | CR0=0xe0000011 CR2=0x100008d8
+01627965782i[CPU0  ] | CR3=0x00104000 CR4=0x00000000
+01627965782i[CPU0  ] 0xc0110f63>> mov eax, dword ptr ds:[eax+452] : 8B80C4010000
+01627965782i[CMOS  ] Last time is 1581490017 (Wed Feb 12 07:46:57 2020)
+01627965782i[      ] restoring default signal behavior
+01627965782i[SIM   ] quit_sim called with exit code 1
