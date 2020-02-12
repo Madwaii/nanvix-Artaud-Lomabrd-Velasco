@@ -14,14 +14,14 @@ EXTERN int sys_kill(pid_t pid, int sig);
 
 typedef struct Sem{
     int counter;
-    struct process *tabWait[64];
+    struct process *tabWait[64]; //tableau des processus en attente
     unsigned  key;
 } SEM;
 
 
 SEM tabSem[64];
 
-unsigned int curkey=1;
+unsigned int curkey=1; //prochain emplacement disponible du tableau de sémaphores
 
 SEM* create (int n){
 
@@ -47,7 +47,7 @@ void down(SEM *sem){
         sem->counter--;
     }
     else{
-        sleep(sem->tabWait,5);
+        sleep(sem->tabWait,5); //on fait dormir les processus dans sem
     }
 }
 
@@ -65,7 +65,7 @@ void up(SEM *sem){
 
 void destroy(SEM *sem){
     for(int i=0;i<64;i++){
-        sem->tabWait[i]=NULL;
+        sem->tabWait[i]=NULL; //on enlève tous les processus de sem
     }
     sem->key=0;
 }
@@ -73,15 +73,15 @@ void destroy(SEM *sem){
 int sys_semget(unsigned key){
     int i=0;
     while(i<64){
-        if(tabSem[i].key==key){
+        if(tabSem[i].key==key){ //verifie si la clé existe déjà
             return i;
         }
         i++;
     }
-    SEM* sem= create(1);
+    SEM* sem= create(1); //sinon crée une semaphore avec cette clé
     sem->key=key;
     int ID=0;
-    while(tabSem[ID].key!=key){
+    while(tabSem[ID].key!=key){ //retrouve l'id du sémaphore crée dans le tableau de semaphores
         ID++;
     }
     return ID;
