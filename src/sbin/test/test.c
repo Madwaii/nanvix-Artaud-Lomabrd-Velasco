@@ -476,6 +476,88 @@ static int sched_test4(void)
  *
  * @returns Zero if passed on test, and non-zero otherwise.
  */
+ int semaphore_test1(void)
+ {
+ 	pid_t pid;                  /* Process ID.              */
+ 	int buffer_fd;              /* Buffer file descriptor.  */
+ 	int empty;                  /* Empty positions.         */
+ 	int full;                   /* Full positions.          */
+ 	int mutex;                  /* Mutex.                   */
+ 	const int BUFFER_SIZE = 32; /* Buffer size.             */
+ 	const int NR_ITEMS = 512;   /* Number of items to send. */
+
+ 	/* Create buffer.*/
+ 	buffer_fd = open("buffer", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+
+ 	if (buffer_fd < 0)
+ 		return (-1);
+
+ 	printf ("test semget \n") ;
+ 	fflush (stdout) ;
+ 	/* Create semaphores. */
+ 	SEM_CREATE(mutex, 1);
+ 	SEM_CREATE(empty, 2);
+ 	SEM_CREATE(full, 3);
+
+ 	printf ("test semctl \n") ;
+ 	fflush (stdout) ;
+
+ 	/* Initialize semaphores. */
+ 	SEM_INIT(full, 0);
+ 	SEM_INIT(empty, BUFFER_SIZE);
+ 	SEM_INIT(mutex, 1);
+
+ 	if ((pid = fork()) < 0)
+ 		return (-1);
+
+ 	/* Producer. */
+ 	else if (pid == 0)
+ 	{
+ 		printf ("test sem down/up producer\n") ;
+ 		fflush (stdout) ;
+ 		for (int item = 0; item < NR_ITEMS; item++)
+ 		{
+ 			SEM_DOWN(empty);
+ 			SEM_DOWN(mutex);
+
+ 			PUT_ITEM(buffer_fd, item);
+
+ 			SEM_UP(mutex);
+ 			SEM_UP(full);
+ 		}
+
+ 		_exit(EXIT_SUCCESS);
+ 	}
+
+ 	/* Consumer. */
+ 	else
+ 	{
+ 		printf ("test sem down/up consumer\n") ;
+ 		int item;
+
+ 		do
+ 		{
+ 			SEM_DOWN(full);
+ 			SEM_DOWN(mutex);
+
+ 			GET_ITEM(buffer_fd, item);
+
+ 			SEM_UP(mutex);
+ 			SEM_UP(empty);
+ 		} while (item != (NR_ITEMS - 1));
+ 	}
+ 	printf("test sem destroy");
+ 	/* Destroy semaphores. */
+ 	SEM_DESTROY(mutex);
+ 	SEM_DESTROY(empty);
+ 	SEM_DESTROY(full);
+
+ 	close(buffer_fd);
+ 	unlink("buffer");
+
+ 	return (0);
+ }
+
 int semaphore_test3(void)
 {
 	pid_t pid;                  /* Process ID.              */
@@ -719,6 +801,8 @@ int main(int argc, char **argv)
 			printf("Interprocess Communication Tests\n");
 			printf("  producer consumer [%s]\n",
 				(!semaphore_test3()) ? "PASSED" : "FAILED");
+			printf("  producer consumer 2 : la revanche [%s]\n",
+				(!semaphore_test1()) ? "PASSED" : "FAILED");			
 		}
 
 		/* FPU test. */
