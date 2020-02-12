@@ -1,7 +1,7 @@
 *.o
 *.lock
 *.debug
-bin/ubin/*
+bin/*
 hdd.img
 lib/libc.a
 nanvix.iso
