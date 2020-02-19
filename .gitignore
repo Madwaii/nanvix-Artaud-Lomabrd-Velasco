@@ -1,3 +1,10 @@
 *.o
 *.lock
 *.debug
+bin/*
+hdd.img
+lib/libc.a
+nanvix.iso
+initrd.img
+nanvix-iso/initrd.img
+nanvix-iso/kernel
