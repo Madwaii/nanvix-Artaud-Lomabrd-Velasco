@@ -589,6 +589,8 @@ int semaphore_test3(void)
 	SEM_INIT(empty, BUFFER_SIZE);
 	SEM_INIT(mutex, 1);
 
+	int works_perfectly = 0;
+
 	if ((pid = fork()) < 0)
 		return (-1);
 
@@ -626,6 +628,7 @@ int semaphore_test3(void)
 
 			if(expected_item != item){
 				printf("Expected item: %d. Recieved: %d\n", expected_item, item);
+				works_perfectly = -1;
 			}
 
 			SEM_UP(mutex);
@@ -641,7 +644,7 @@ int semaphore_test3(void)
 	close(buffer_fd);
 	unlink("buffer");
 
-	return (0);
+	return (works_perfectly);
 }
 
 /*============================================================================*
