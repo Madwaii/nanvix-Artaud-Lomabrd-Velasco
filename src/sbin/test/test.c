@@ -617,16 +617,20 @@ int semaphore_test3(void)
 		printf ("test sem down/up consumer\n") ;
 		int item;
 
-		do
+		for (int expected_item = 0; expected_item < NR_ITEMS; expected_item++)
 		{
 			SEM_DOWN(full);
 			SEM_DOWN(mutex);
 
 			GET_ITEM(buffer_fd, item);
 
+			if(expected_item != item){
+				printf("Expected item: %d. Recieved: %d\n", expected_item, item);
+			}
+
 			SEM_UP(mutex);
 			SEM_UP(empty);
-		} while (item != (NR_ITEMS - 1));
+		}
 	}
 	printf("test sem destroy");
 	/* Destroy semaphores. */
