@@ -589,6 +589,8 @@ int semaphore_test3(void)
 	SEM_INIT(empty, BUFFER_SIZE);
 	SEM_INIT(mutex, 1);
 
+	int works_perfectly = 0;
+
 	if ((pid = fork()) < 0)
 		return (-1);
 
@@ -617,16 +619,21 @@ int semaphore_test3(void)
 		printf ("test sem down/up consumer\n") ;
 		int item;
 
-		do
+		for (int expected_item = 0; expected_item < NR_ITEMS; expected_item++)
 		{
 			SEM_DOWN(full);
 			SEM_DOWN(mutex);
 
 			GET_ITEM(buffer_fd, item);
 
+			if(expected_item != item){
+				printf("Expected item: %d. Recieved: %d\n", expected_item, item);
+				works_perfectly = -1;
+			}
+
 			SEM_UP(mutex);
 			SEM_UP(empty);
-		} while (item != (NR_ITEMS - 1));
+		}
 	}
 	printf("test sem destroy");
 	/* Destroy semaphores. */
@@ -637,7 +644,7 @@ int semaphore_test3(void)
 	close(buffer_fd);
 	unlink("buffer");
 
-	return (0);
+	return (works_perfectly);
 }
 
 /*============================================================================*
