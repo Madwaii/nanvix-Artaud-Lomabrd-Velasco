@@ -737,6 +737,62 @@ int fpu_test(void)
 	return (result == 0x40b2aaaa);
 }
 
+int sec_test(void)
+{
+	int fd;
+	char buffer[15];
+	if(buffer == NULL) {
+		exit(EXIT_FAILURE);
+	}
+	fd = open("/dev/ramdisk", O_WRONLY);
+	//fd = open("/etc/passwords", O_WRONLY);
+	if(fd < 0) {
+		exit(EXIT_FAILURE);
+	}
+	size_t count = sizeof(buffer);
+	int res = write(fd, buffer, count);
+	if(res != -1 && res != 0 && res > 0) {
+		printf("Bytes could be written => Breach found\n");
+		return EXIT_SUCCESS;
+	}
+	return EXIT_FAILURE;
+	//return (0);
+}
+
+int sec_test2(void)
+{
+	int fd;
+	char buffer[15];
+	if(buffer == NULL) {
+		exit(EXIT_FAILURE);
+	}
+	fd = open("/etc/passwords", O_RDONLY);
+	if(fd < 0) {
+		exit(EXIT_FAILURE);
+	}
+	size_t count = sizeof(buffer);
+	int res = read(fd, buffer, count);
+	if(res != -1 && res != 0 && res > 0) {
+		printf("Encrypted passwords could be read => Breach found\n");
+		return EXIT_SUCCESS;
+	}
+	return EXIT_FAILURE;
+}
+
+static int forkbomb() {
+	for(int i = 0; i < 1000; i++) {
+		fork();
+		printf("New fork !\n");
+		if(i > 980) {
+			semaphore_test3();
+		}
+	}
+	//while(1) {
+		//fork();
+		//printf("New fork !\n");
+	//}
+	return(0);
+}
 
 /*============================================================================*
  *                                   main                                     *
@@ -757,6 +813,8 @@ static void usage(void)
 	printf("  ipc   Interprocess Communication Test\n");
 	printf("  swp   Swapping Test\n");
 	printf("  sched Scheduling Test\n");
+	printf("  sec   Security\n");
+	printf("  int   Integrity\n");
 
 	exit(EXIT_SUCCESS);
 }
@@ -809,7 +867,7 @@ int main(int argc, char **argv)
 			printf("  producer consumer [%s]\n",
 				(!semaphore_test3()) ? "PASSED" : "FAILED");
 			printf("  producer consumer 2 : la revanche [%s]\n",
-				(!semaphore_test1()) ? "PASSED" : "FAILED");			
+				(!semaphore_test1()) ? "PASSED" : "FAILED");
 		}
 
 		/* FPU test. */
@@ -820,6 +878,21 @@ int main(int argc, char **argv)
 				(!fpu_test()) ? "PASSED" : "FAILED");
 		}
 
+		/* Security test. */
+		else if(!strcmp(argv[i], "sec"))
+		{
+			printf("Security Test\n");
+			printf("   Result [%s]\n",
+				(!sec_test()) ? "PASSED" : "FAILED");
+			printf("   Passwords broken [%s]\n",
+		 		(!sec_test2()) ? "PASSED" : "FAILED");
+		}
+		/* Integrity test. */
+		else if(!strcmp(argv[i], "int")) {
+			printf("Integrity Test\n");
+			printf("   Result [%s]\n",
+		 		(!forkbomb()) ? "PASSED" : "FAILED");
+		}
 
 		/* Wrong usage. */
 		else

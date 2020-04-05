@@ -95,12 +95,19 @@ int sys_semget(unsigned key){
 int sys_semctl(int semid, int cmd, int val){
     switch(cmd){
         case GETVAL:
-        return tabSem[semid].counter;
+          if(semid > 0) {
+            return tabSem[semid].counter;
+          }
+          return 0;
         case SETVAL:
-        tabSem[semid].counter=val;
-        return 0;
+          if(semid > 0) {
+            tabSem[semid].counter=val;
+          }
+          return 0;
         case IPC_RMID:
-        destroy(&tabSem[semid]);
+          if(semid > 0) {
+            destroy(&tabSem[semid]);
+          }
         return 0;
         default:
         break;

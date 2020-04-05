@@ -33,6 +33,10 @@ ROOTGID=0
 NOOBUID=1
 NOOBUID=1
 
+# UserTest credentials
+TOTOUID=0
+TOTOGID=0
+
 # macOS compatibility stuff
 if [ "x$(uname -rv | grep Darwin)" != "x" ];
 then
@@ -96,6 +100,7 @@ function passwords
 
 	bin/useradd $file root root $ROOTGID $ROOTUID
 	bin/useradd $file noob noob $NOOBUID $NOOBUID
+  bin/useradd $file toto toto $TOTOGID $TOTOUID
 
 	# Let's care about security...
 	if [ "$EDUCATIONAL_KERNEL" == "0" ]; then
@@ -120,6 +125,7 @@ function format {
 	bin/mkdir.minix $1 /sbin $ROOTUID $ROOTGID
 	bin/mkdir.minix $1 /bin $ROOTUID $ROOTGID
 	bin/mkdir.minix $1 /home $ROOTUID $ROOTGID
+  bin/mkdir.minix $1 /test_integrity $ROOTUID $ROOTGID
 	bin/mkdir.minix $1 /dev $ROOTUID $ROOTGID
 	bin/mknod.minix $1 /dev/null 666 c 0 0 $ROOTUID $ROOTGID
 	bin/mknod.minix $1 /dev/tty 666 c 0 1 $ROOTUID $ROOTGID
@@ -157,6 +163,13 @@ function copy_files
 			bin/cp.minix $1 $file /bin/$filename $ROOTUID $ROOTGID
 		fi;
 	done
+
+  for file in bin/test_integrity/*; do
+    filename=`basename $file`
+    if [[ "$filename " != *.debug ]]; then
+      bin/cp.minix $1 $file /test_integrity/$filename $ROOTUID $ROOTGID
+    fi;
+  done
 }
 
 #

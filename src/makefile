@@ -1,5 +1,5 @@
-# 
-# Copyright(C) 2011-2016 Pedro H. Penna <pedrohenriquepenna@gmail.com> 
+#
+# Copyright(C) 2011-2016 Pedro H. Penna <pedrohenriquepenna@gmail.com>
 #
 # This file is part of Nanvix.
 #
@@ -22,14 +22,15 @@
 .PHONY: lib
 .PHONY: sbin
 .PHONY: ubin
+.PHONY: test_integrity
 
 # Builds everything.
-all: kernel lib sbin ubin
-	
+all: kernel lib sbin ubin test_integrity
+
 # Builds the kernel.
 kernel:
 	cd kernel/ && $(MAKE) all
-	
+
 # Builds the libraries.
 lib:
 	cd lib/ && $(MAKE) all
@@ -48,3 +49,4 @@ clean:
 	cd lib/ && $(MAKE) clean
 	cd sbin/ && $(MAKE) clean
 	cd ubin/ && $(MAKE) clean
+	cd test_integrity/ && $(MAKE) clean
